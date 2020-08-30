@@ -28,10 +28,10 @@ class construct_graph():
 			to_neighbors.append(set(temp))
 		return to_neighbors
 
-
 if __name__ == "__main__":
 	data = nx.petersen_graph()
 	model = construct_graph(data)
 	adj = model.adjency_matrix()
 	index = model.index_adjmatrix()
 	print(adj)
+	print(index)

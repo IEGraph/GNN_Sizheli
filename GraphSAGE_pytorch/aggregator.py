@@ -41,8 +41,13 @@ class MeanAggregator(nn.Module):
 					samp_neighs.append(to_neigh)
 		else:
 			samp_neighs = to_neighs
+		if self.gcn:
+			samp_neighs = [samp_neigh + set([nodes[i]]) for i, samp_neigh in enumerate(samp_neighs)]
+		#print(len(samp_neighs))
 		unique_nodes_list = list(set.union(*samp_neighs))
+		#print("the length of node_list:", len(unique_nodes_list))
 		unique_nodes = {n:i for i,n in enumerate(unique_nodes_list)}
+		#print("the length of nodes dic:", len(unique_nodes))
 		mask = Variable(torch.zeros(len(samp_neighs), len(unique_nodes)))
 		column_indices = []
 		for samp_neigh in samp_neighs:
@@ -59,17 +64,15 @@ class MeanAggregator(nn.Module):
 		num_neigh = mask.sum(1, keepdim = True)
 		mask = mask.div(num_neigh)
 		if self.cuda:
-			embed_matrix = torch.FloatTensor(self.features[unique_nodes_list]).cuda()
+			embed_matrix = self.features(torch.LongTensor(unique_nodes_list).cuda())
 		else:
-			embed_matrix = torch.FloatTensor(self.features[unique_nodes_list])
-		print(embed_matrix.dtype)
+			embed_matrix = self.features(torch.LongTensor(unique_nodes_list))
+		#print(embed_matrix.dtype)
 		to_feats = mask.mm(embed_matrix)
 		return to_feats
 if __name__ == "__main__":
 	# we load the cora data
 	data = citation.load_cora()
-	# load features
-	features = data.features
 	# load the graph
 	graph = data.graph
 	# build the graph class
@@ -77,13 +80,17 @@ if __name__ == "__main__":
 	# compute the adj matrix of the model
 	model.adjency_matrix()
 	# build the instrance of the MeanAggregator
+	features = nn.Embedding(2708, 1433)
+	features.weight = nn.Parameter(torch.FloatTensor(data.features), requires_grad = False)
+
 	net = MeanAggregator(features)
 	nodes = model.nodes
-	# find the neighbors of corresponding nodes
+	# find the neighbors of corresponding nodes aggregator.py:81
 	to_neighs = model.index_adjmatrix()
 	result = net(nodes, to_neighs)
 	# now test the result of the to_feats, check the dtype and dimension of
 	# matrix
-	print(result)
+
+
 
 
