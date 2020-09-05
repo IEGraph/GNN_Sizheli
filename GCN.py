@@ -43,7 +43,7 @@ class GCNlayer(nn.Module):
 
 def evaluate(model, Z, feature_matrix, targets):
 	model.eval()
-	logits = model(Z, features_matrix)
+	logits = model(Z, feature_matrix)
 	_, indices = torch.max(logits, dim = 1)
 	correct = torch.sum(indices == targets)
 	return correct.item() * 1.0 / len(targets)
