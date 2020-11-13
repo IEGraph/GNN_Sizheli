@@ -1,0 +1,6 @@
+split value is:	4
+total number	80000
+positive link	44140
+positive density	0.55175
+negative link	35860
+negative density	0.44825
