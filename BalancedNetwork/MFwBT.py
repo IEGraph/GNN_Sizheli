@@ -1,4 +1,4 @@
-from sklearn.metrics import f1_score, roc_auc_score
+from sklearn.metrics import f1_score, roc_auc_score, accuracy_score, precision_score
 from math import ceil
 from torch.autograd import Variable
 from torch.utils.data import DataLoader, TensorDataset
@@ -7,6 +7,7 @@ import scipy.sparse as sps
 import sys
 import torch.nn as nn
 import torch
+#import matplotlib.pylab as plt
 
 "https://github.com/tylersnetwork/signed_bipartite_networks/blob/master/src/MFwBT/MFwBT.py"
 
@@ -35,12 +36,9 @@ class MatrixFactorization(nn.Module):
 	def save_me(self, output_file):
 		torch.save(self.state_dict(), output_file)
 
-
-
 def run_matrix_factorization(args, parameters):
 	zeros = Variable(torch.zeros([args.minibatch_size]), requires_grad = False)
 	ones = Variable(torch.FloatTensor([1]*args.minibatch_size), requires_grad = False)
-
 	# below used on the final minibatch that might be of smaller size
 	zeros_left_over = Variable(torch.zeros([len(parameters["links_train"]) % args.minibatch_size]), requires_grad = False)
 	ones_left_over = Variable(torch.FloatTensor([1] * (len(parameters["links_train"]) % args.minibatch_size)), requires_grad = False)
@@ -48,6 +46,7 @@ def run_matrix_factorization(args, parameters):
 	def square_hinge(real, pred):
 		try:
 			loss = torch.max(zeros, (ones - real * pred)) ** 2
+
 		except:
 			loss = torch.max(zeros_left_over, (ones_left_over - real * pred)) ** 2
 		return torch.mean(loss)
@@ -56,7 +55,7 @@ def run_matrix_factorization(args, parameters):
 	extra_signs_tensor = torch.FloatTensor(parameters["extra_signs"])
 	#extra_signs_tensor = extra_signs_tensor.unsqueeze(dim = 1)
 	extra_tensor = TensorDataset(extra_links_tensor, extra_signs_tensor)
-	extra_tensor_loader = DataLoader(extra_tensor, shuffle = True, batch_size = args.minibatch_size)
+	extra_tensor_loader = DataLoader(extra_tensor, shuffle = True, batch_size = args.minibatch_size, drop_last = True)
 	# transform the loader into a iterator object
 	extra_tensor_iterator = iter(extra_tensor_loader)
 
@@ -64,7 +63,7 @@ def run_matrix_factorization(args, parameters):
 	signs_tr_tensor = torch.FloatTensor(parameters["signs_train"])
 	#signs_tr_tensor = signs_tr_tensor.unsqueeze(dim = 1)
 	tr_tensor = TensorDataset(links_tr_tensor, signs_tr_tensor)
-	tr_tensor_loader = DataLoader(tr_tensor, shuffle = True, batch_size = args.minibatch_size)
+	tr_tensor_loader = DataLoader(tr_tensor, shuffle = True, batch_size = args.minibatch_size, drop_last = True)
 	tr_tensor_iterator = iter(tr_tensor_loader)
 
 	b_te_tensor = torch.LongTensor([b for b,s in parameters["links_test"]])
@@ -79,6 +78,7 @@ def run_matrix_factorization(args, parameters):
 	extra_num_minibatcher_per_epoch = int(ceil(len(parameters["extra_links"])/int(args.minibatch_size)))
 	mod_balance = args.mod_balance
 	alpha = args.alpha
+	loss_history = []
 	for it in range(args.num_epochs):
 		model.train()
 		print('epoch {} of {}'.format(it, args.num_epochs))
@@ -104,11 +104,14 @@ def run_matrix_factorization(args, parameters):
 				b = b_s[:, :1]
 				s = b_s[:, 1:2]
 				prediction = model(b, s)
-				loss = square_hinge(Variable(sign), prediction)
-			print("loss is:\t", loss.data.detach().item())
+				loss = alpha * square_hinge(Variable(sign), prediction)
+			#print("loss is:\t", loss.data.detach().item())
+			#loss_history.append(loss.detach().item())
 			optimizer.zero_grad()
 			loss.backward()
 			optimizer.step()
+			# printing progress
+
 	model.eval()
 	# can switch to tensor version
 	# prediction = model.predict(b_te_tensor, s_te_tensor)
@@ -125,15 +128,18 @@ def run_matrix_factorization(args, parameters):
 	# calculate AUC and F1
 	auc = roc_auc_score(parameters["signs_test"], predicted)
 	f1 = f1_score(parameters["signs_test"], predicted)
-	return auc, f1
+	accu = accuracy_score(parameters["signs_test"], predicted)
+	prec = precision_score(parameters["signs_test"], predicted)
+	return auc, f1, loss_history, accu, prec
 
-def runs(args):
+def runs(args, original_oath):
 	train_data = 'train_datafile.txt'
 	test_data = 'test_datafile.txt'
 
 	train_links = []
 	sign_train = []
 	with open(train_data, mode = 'r') as f:
+		f.readline()
 		for l in f.readlines():
 			row = [int(val) for val in l.split('\t')]
 			train_links.append((row[0], row[1]))
@@ -141,6 +147,7 @@ def runs(args):
 	test_links = []
 	sign_test = []
 	with open(test_data, mode = 'r') as f:
+		f.readline()
 		for l in f.readlines():
 			row = [int(val) for val in l.split('\t')]
 			test_links.append((row[0], row[1]))
@@ -165,7 +172,7 @@ def runs(args):
 			sign_extra.append(row[2])
 	print("the number of extra:\t", len(extra_links))
 	# construct dictions for the parameters
-	with open('bonanza_cikm2019_balance_in_signed_bipartite_networks.txt', mode = 'r') as f:
+	with open(original_oath, mode = 'r') as f:
 		num_buyers, num_sellers, sign = [int(val) for val in f.readline().split('\t')]
 
 	parameters = {}
@@ -177,12 +184,28 @@ def runs(args):
 	parameters["extra_signs"] = sign_extra
 	parameters["num_buyers"] = num_buyers
 	parameters["num_sellers"] = num_sellers
-	auc, f1 = run_matrix_factorization(args = args, parameters = parameters)
+
+	auc, f1, loss_history, accuracy, precision = run_matrix_factorization(args = args, parameters = parameters)
+
 	print("the area under curve is:\t", auc)
 	print("f1 value is:\t", f1)
+	print("accuracy is:\t", accuracy)
+	print("precision is:\t", precision)
+	with open('metrices_forall_threshold', mode = 'a') as f:
+		f.write("auc:\t{}, f1:\t{}, accuracy:\t{}, precision:\t{}".format(auc, f1, accuracy, precision))
+	#return loss_history
+
+def plot_history(records):
+	plt.figure()
+	plt.plot(records, linewidth = 1.5, color = 'black')
+	plt.xlabel("iterations")
+	plt.ylabel('loss function')
+	plt.title("Loss Function Trend")
+	plt.show()
 
 if __name__ == "__main__":
-	runs(args = args)
+	loss_history = runs(args = args)
+	#plot_history(loss_history)
 
 
 

@@ -1,0 +1,6 @@
+split value is:	3
+total number	1000209
+positive link	836478
+positive density	0.8363032126285607
+negative link	163731
+negative density	0.16369678737143936

@@ -86,7 +86,7 @@ class data_loader():
 			f.write('\n'.join(lines))
 		pos_links.sort(reverse = True)
 		with open("./extra_pos_from_ml100k", mode = 'w') as f:
-			lines = ['{}\t{}\t{}'.format(b, s, -1) for (b, s), val in pos_links]
+			lines = ['{}\t{}\t{}'.format(b, s, 1) for (b, s), val in pos_links]
 			f.write("\n".join(lines))
 
 if __name__ == "__main__":

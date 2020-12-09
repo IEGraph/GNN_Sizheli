@@ -15,7 +15,7 @@ topk_pos_to_use = int(sys.argv[5])
 
 def data_write(path):
 	with open(file = path, mode = 'r') as f:
-		num_b, num_s, num_e = [int(value) for value in f.readline().split('\t')]
+		num_b, num_s, _ = [int(value) for value in f.readline().split('\t')]
 		print("num buyers and sellers:", num_b, num_s)
 		links = []
 		signs = []
@@ -54,8 +54,8 @@ def data_write(path):
 
 	print("total nonzero:\t", len(S.keys()))
 	print("total not in B:\t", len(assumed_links))
-	print("assumed_links:\t", assumed_links[:20])
-	"""
+	#print("assumed_links:\t", assumed_links[:20])
+
 	with open('./extra_links_from_B_balance_theory.txt', 'w') as f:
 		f.write('\n'.join(assumed_links))
 
@@ -68,7 +68,7 @@ def data_write(path):
 	with open('./extra_pos_links_sorted_from_B_balance_theory.txt', 'w') as f:
 		lines = ['{}\t{}\t{}'.format(b, s, 1) for val, (b, s) in pos_with_link]
 		f.write('\n'.join(lines))
-	"""
+
 
 if __name__ == "__main__":
 	files = os.listdir()

@@ -80,7 +80,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="configurature" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="analysis_lab3" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="BalancedNetwork" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -92,7 +92,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/configurature.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/analysis_lab3.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -101,7 +101,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="get_extra_links" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="code_exam" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="BalancedNetwork" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -113,7 +113,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/get_extra_links.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/code_exam.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -122,7 +122,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="train_test_split" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="BalancedNetwork" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -134,7 +134,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/train_test_split.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -146,10 +146,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.MFwBT" />
-        <item itemvalue="Python.configurature" />
-        <item itemvalue="Python.get_extra_links" />
-        <item itemvalue="Python.train_test_split" />
+        <item itemvalue="Python.main" />
         <item itemvalue="Python.DataLoader" />
+        <item itemvalue="Python.analysis_lab3" />
+        <item itemvalue="Python.code_exam" />
       </list>
     </recent_temporary>
   </component>

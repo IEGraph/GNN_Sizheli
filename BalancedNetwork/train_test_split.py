@@ -7,8 +7,7 @@ def split_train_test(path):
 	with open(path, mode = 'r') as f:
 		num_b, num_s, num_links = f.readline().split('\t')
 		print("the number of buyers:\t{}, the number of sellers:\t{}, the number of links:\t{}".format(
-			num_b, num_s, num_links
-		))
+			num_b, num_s, num_links))
 		links = []
 		signs = []
 		for l in f.readlines():
@@ -27,8 +26,10 @@ def split_train_test(path):
 	print("display the train list:\n", len(train_file_list))
 	print("display the test list:\n", len(test_file_list))
 	with open("./train_datafile.txt", mode = 'w') as f:
+		f.write('{}\t{}\t{}\n'.format(num_b, num_s, len(train_file_list)))
 		f.write('\n'.join(train_file_list))
 	with open("./test_datafile.txt", mode = 'w') as f:
+		f.write('{}\t{}\t{}\n'.format(num_b, num_s, len(test_file_list)))
 		f.write('\n'.join(test_file_list))
 
 if __name__ == "__main__":
